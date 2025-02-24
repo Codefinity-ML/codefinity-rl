@@ -3,7 +3,6 @@ from codefinityrl.spaces import Empty
 
 
 class MultiArmedBanditStationaryEnv(gym.Env):
-
     def __init__(self, n_arms: int):
         self.observation_space = Empty()
         self.action_space = gym.spaces.Discrete(n_arms)
@@ -25,7 +24,6 @@ class MultiArmedBanditStationaryEnv(gym.Env):
 
 
 class MultiArmedBanditDynamicEnv(gym.Env):
-
     def __init__(self, n_arms: int, drift_interval: int):
         self.observation_space = Empty()
         self.action_space = gym.spaces.Discrete(n_arms)

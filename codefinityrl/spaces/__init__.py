@@ -1,3 +1,3 @@
-from codefinityrl.spaces.empty import (
-    Empty,
-)
+__all__ = ["Empty"]
+
+from codefinityrl.spaces.empty import Empty
