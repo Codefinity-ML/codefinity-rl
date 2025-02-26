@@ -1,3 +1,4 @@
+import numpy as np
 from IPython.display import display_markdown, display_html
 from pygments import highlight
 from pygments.lexers import get_lexer_by_name
@@ -17,3 +18,7 @@ def display_solution(code: str):
 
 def display_check(correct: bool, text: str):
     display_html(f"""<span style="color: {"green" if correct else "red"}">{text}</span>""", raw=True)
+
+
+def np_random_generator():
+    return np.random.default_rng(seed=42)
