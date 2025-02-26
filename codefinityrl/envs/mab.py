@@ -12,8 +12,10 @@ class MultiArmedBanditStationaryEnv(gym.Env):
         self.values = None
 
     def step(self, action: int):
+        is_action_optimal = action == self.values.argmax()
+
         reward = self.values[action] + self.np_random.normal()
-        return None, reward, False, False, {}
+        return None, reward, False, False, {"is_action_optimal": is_action_optimal}
 
     def reset(self, seed: int | None = None, options: dict | None = None):
         super().reset(seed=seed)
@@ -36,6 +38,8 @@ class MultiArmedBanditDynamicEnv(gym.Env):
         self.t = None
 
     def step(self, action: int):
+        is_action_optimal = action == self.values.argmax()
+
         self.t += 1
         if self.t % self.drift_interval == 0:
             self.values_drift = (
@@ -45,7 +49,7 @@ class MultiArmedBanditDynamicEnv(gym.Env):
         reward = self.values[action] + self.np_random.normal()
         self.values += self.values_drift
 
-        return None, reward, False, False, {}
+        return None, reward, False, False, {"is_action_optimal": is_action_optimal}
 
     def reset(self, seed: int | None = None, options: dict | None = None):
         super().reset(seed=seed)
