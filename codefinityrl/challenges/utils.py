@@ -23,5 +23,8 @@ def display_check(correct: bool, text: str):
     )
 
 
-def np_random_generator() -> np.random.Generator:
-    return np.random.default_rng(seed=42)
+def np_random_generator(fixed_rng: bool) -> np.random.Generator:
+    if fixed_rng:
+        return np.random.default_rng(seed=42)
+    else:
+        return np.random.default_rng()
