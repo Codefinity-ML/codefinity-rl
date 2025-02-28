@@ -74,7 +74,7 @@ class _GradientBanditsAgent:
 
     def update(self, action: int, reward: float):
         self.t += 1
-        self.reward_avg = 0
+        self.reward_avg += (reward - self.reward_avg) / self.t
 
         probs = softmax(self.H)
 
