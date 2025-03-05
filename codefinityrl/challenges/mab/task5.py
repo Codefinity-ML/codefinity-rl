@@ -43,6 +43,7 @@ def test_agent(env_params: dict, agent_cls, agent_params: dict, test_envs: int):
 
             done = terminated or truncated
         average_return += total_reward / test_envs
+    env.close()
     return optimal_action_rate, average_return
 """
     return display_solution(code)
