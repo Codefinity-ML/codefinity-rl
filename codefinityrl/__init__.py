@@ -9,3 +9,8 @@ register(
     id="MultiArmedBanditDynamic-v0",
     entry_point="codefinityrl.envs:MultiArmedBanditDynamicEnv",
 )
+
+register(
+    id="KeyAndChest-v0",
+    entry_point="codefinityrl.envs:KeyAndChestEnv",
+)
