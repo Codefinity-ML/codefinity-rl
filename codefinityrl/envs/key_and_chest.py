@@ -69,8 +69,15 @@ class KeyAndChestEnv(gym.Env):
         return self._get_obs(), {}
 
     def step(self, action):
-        x, y = self._agent_pos
+        obs, reward, terminated, truncated, info = self.simulate_step(
+            self._get_obs(), action
+        )
+        self._agent_pos = (obs["x"], obs["y"])
+        self._has_key = obs["key"]
+        return obs, reward, terminated, truncated, info
 
+    def simulate_step(self, state, action):
+        x, y, key = state["x"], state["y"], state["key"]
         if action == 0 and ((x, y - 1, "h") not in self._walls):
             new_pos = (x, y - 1)
         elif action == 1 and ((x, y, "h") not in self._walls):
@@ -82,19 +89,35 @@ class KeyAndChestEnv(gym.Env):
         else:
             new_pos = (x, y)
 
+        agent_pos = (x, y)
         if 0 < new_pos[0] < self.grid_size + 1 and 0 < new_pos[1] < self.grid_size + 1:
-            self._agent_pos = new_pos
+            agent_pos = new_pos
 
-        if self._agent_pos == self._key_pos:
-            self._has_key = True
+        has_key = key
+        if agent_pos == self._key_pos:
+            has_key = True
 
-        if self._agent_pos == self._chest_pos and self._has_key:
-            return self._get_obs(), 10.0, True, False, {}
+        if agent_pos == self._chest_pos and has_key:
+            return self._get_obs(agent_pos, has_key), 10.0, True, False, {}
 
-        return self._get_obs(), -1.0, False, False, {}
+        return self._get_obs(agent_pos, has_key), -1.0, False, False, {}
 
-    def _get_obs(self):
-        return {"x": self._agent_pos[0], "y": self._agent_pos[1], "key": self._has_key}
+    def _get_obs(self, agent_pos=None, has_key=None):
+        if agent_pos is None and has_key is None:
+            agent_pos = self._agent_pos
+            has_key = self._has_key
+        return {"x": agent_pos[0], "y": agent_pos[1], "key": has_key}
+
+    def states(self):
+        for i in range(1, self.grid_size + 1):
+            for j in range(1, self.grid_size + 1):
+                if (i, j) != self._key_pos:
+                    yield self._get_obs((i, j), False)
+                yield self._get_obs((i, j), True)
+
+    def actions(self):
+        for i in range(4):
+            yield i
 
     def render(self):
         if self.render_mode == "rgb_array":
