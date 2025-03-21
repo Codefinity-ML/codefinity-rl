@@ -11,12 +11,12 @@ class KeyAndChestEnv(gym.Env):
         self.grid_size = 7
         self.action_space = spaces.Discrete(4)
         self.action_descriptions = ["UP", "DOWN", "LEFT", "RIGHT"]
-        self.observation_space = spaces.Dict(
-            {
-                "x": spaces.Discrete(self.grid_size, start=1),
-                "y": spaces.Discrete(self.grid_size, start=1),
-                "key": spaces.Discrete(2),
-            }
+        self.observation_space = spaces.Tuple(
+            (
+                spaces.Discrete(self.grid_size, start=1),
+                spaces.Discrete(self.grid_size, start=1),
+                spaces.Discrete(2),
+            )
         )
 
         self._walls = {
@@ -72,12 +72,12 @@ class KeyAndChestEnv(gym.Env):
         obs, reward, terminated, truncated, info = self.simulate_step(
             self._get_obs(), action
         )
-        self._agent_pos = (obs["x"], obs["y"])
-        self._has_key = obs["key"]
+        self._agent_pos = (obs[0], obs[1])
+        self._has_key = obs[2]
         return obs, reward, terminated, truncated, info
 
     def simulate_step(self, state, action):
-        x, y, key = state["x"], state["y"], state["key"]
+        x, y, key = state
         if action == 0 and ((x, y - 1, "h") not in self._walls):
             new_pos = (x, y - 1)
         elif action == 1 and ((x, y, "h") not in self._walls):
@@ -106,7 +106,7 @@ class KeyAndChestEnv(gym.Env):
         if agent_pos is None and has_key is None:
             agent_pos = self._agent_pos
             has_key = self._has_key
-        return {"x": agent_pos[0], "y": agent_pos[1], "key": has_key}
+        return agent_pos[0], agent_pos[1], has_key
 
     def states(self):
         for i in range(1, self.grid_size + 1):
