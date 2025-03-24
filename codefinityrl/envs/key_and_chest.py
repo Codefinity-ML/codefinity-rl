@@ -90,15 +90,17 @@ class KeyAndChestEnv(gym.Env):
             new_pos = (x, y)
 
         agent_pos = (x, y)
+        pos_changed = False
         if 0 < new_pos[0] < self.grid_size + 1 and 0 < new_pos[1] < self.grid_size + 1:
             agent_pos = new_pos
+            pos_changed = True
 
         has_key = key
         if agent_pos == self._key_pos:
             has_key = True
 
-        if agent_pos == self._chest_pos and has_key:
-            return self._get_obs(agent_pos, has_key), 10.0, True, False, {}
+        if agent_pos == self._chest_pos and has_key and pos_changed:
+            return self._get_obs(agent_pos, has_key), 0, True, False, {}
 
         return self._get_obs(agent_pos, has_key), -1.0, False, False, {}
 
