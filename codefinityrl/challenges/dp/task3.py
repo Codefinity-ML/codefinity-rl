@@ -8,7 +8,7 @@ from codefinityrl.challenges.utils import (
 from codefinityrl.challenges.dp.impls import _ValueIterationAgent
 
 
-def hint2():
+def hint3():
     hint = """
 Hints:
 - To implement policy evaluation loop, you may want to initialize delta
@@ -23,7 +23,7 @@ store the action value and the current best action.
     display_hint(hint)
 
 
-def solution2():
+def solution3():
     code = """
 class ValueIterationAgent:
     def __init__(self, env: gym.Env):
@@ -74,7 +74,7 @@ class ValueIterationAgent:
     display_solution(code)
 
 
-def check2(user_agent_cls):
+def check3(user_agent_cls):
     env = gym.make("codefinityrl:KeyAndChest-v0")
 
     user_agent = user_agent_cls(env)
