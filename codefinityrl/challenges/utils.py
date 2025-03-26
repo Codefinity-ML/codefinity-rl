@@ -30,6 +30,18 @@ def display_check(correct: bool, text: str):
     )
 
 
+def value_dicts_close(dict1, dict2):
+    if dict1.keys() != dict2.keys():
+        return False
+
+    for key in dict1:
+        val1, val2 = dict1[key], dict2[key]
+        if not np.isclose(val1, val2):
+            return False
+
+    return True
+
+
 def np_random_generator(fixed_rng: bool) -> np.random.Generator:
     if fixed_rng:
         return np.random.default_rng(seed=42)
