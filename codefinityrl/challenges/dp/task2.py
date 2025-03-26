@@ -14,8 +14,8 @@ Hints:
 - To implement policy evaluation loop, you may want to initialize delta
 to np.inf before the while loop;
 - For policy improvement, argmax is better implemented by an inner
-loop over actions. To find best action, use additional variables to
-store the action value and current best action.
+loop over actions. To find the best action, use additional variables to
+store the action value and the current best action.
 """
     display_hint(hint)
 
