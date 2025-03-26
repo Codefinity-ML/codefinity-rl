@@ -1,3 +1,5 @@
+import numpy as np
+
 from codefinityrl.challenges.mab.impls import _test_agent, _EpsilonGreedyAgent
 from codefinityrl.challenges.utils import display_hint, display_solution, display_check
 
@@ -55,7 +57,7 @@ def _test_params(env_params: dict, agent_cls, agent_params: dict):
         env_params, _EpsilonGreedyAgent, agent_params, 10
     )
     _, average_return_actual = _test_agent(env_params, agent_cls, agent_params, 10)
-    return average_return_correct == average_return_actual
+    return np.isclose(average_return_correct, average_return_actual)
 
 
 def check2(agent_cls):

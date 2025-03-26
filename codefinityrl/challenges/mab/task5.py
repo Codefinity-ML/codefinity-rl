@@ -56,9 +56,9 @@ def _test_params(user_test_agent, env_params: dict, agent_cls, agent_params: dic
     optimal_action_rate_actual, average_return_actual = user_test_agent(
         env_params, agent_cls, agent_params, 10
     )
-    return np.array_equal(
-        optimal_action_rate_correct, optimal_action_rate_actual
-    ), average_return_correct == average_return_actual
+    return np.all(
+        np.isclose(optimal_action_rate_correct, optimal_action_rate_actual)
+    ), np.isclose(average_return_correct, average_return_actual)
 
 
 def check5(user_test_agent):
