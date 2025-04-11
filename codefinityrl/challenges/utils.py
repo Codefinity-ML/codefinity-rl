@@ -4,12 +4,15 @@ import imageio
 import numpy as np
 import gymnasium as gym
 import matplotlib.pyplot as plt
+import matplotlib.colors as mcolors
 import seaborn as sns
 from IPython.display import display, Video
 from IPython.display import display_markdown, display_html
+from matplotlib.patches import Polygon
 from pygments import highlight
 from pygments.lexers import get_lexer_by_name
 from pygments.formatters import HtmlFormatter
+from seaborn.utils import relative_luminance
 
 
 def display_hint(text: str):
@@ -74,55 +77,110 @@ class VideoRecord:
 
 
 def plot_values(values_dict):
+    if len(values_dict.keys()[0]) == 3:
+        plot_state_values(values_dict)
+    else:
+        plot_action_values(values_dict)
+
+
+def plot_state_values(values_dict):
     env = gym.make("codefinityrl:KeyAndChest-v0", render_mode="rgb_array")
     env.reset()
 
     values = np.full((2, 7, 7), np.nan)
-    for state in env.unwrapped.states():
-        values[int(state[2]), state[1] - 1, state[0] - 1] = values_dict[state]
-    for state in env.unwrapped.terminal_states():
-        values[int(state[2]), state[1] - 1, state[0] - 1] = values_dict[state]
+    for x, y, key in values_dict.keys():
+        values[int(key), y - 1, x - 1] = values_dict[(x, y, key)]
 
     vmin = np.min(values, where=~np.isnan(values), initial=np.inf)
     vmax = np.max(values, where=~np.isnan(values), initial=-np.inf)
 
     fig, axes = plt.subplots(1, 3, figsize=(16, 5))
 
-    sns.heatmap(
-        values[0],
-        ax=axes[0],
-        vmin=vmin,
-        vmax=vmax,
-        annot=True,
-        fmt=".1f",
-        square=True,
-        xticklabels=False,
-        yticklabels=False,
-        cbar=False,
-        cmap="coolwarm",
-    )
-    axes[0].set_title("No key")
-
-    sns.heatmap(
-        values[1],
-        ax=axes[1],
-        vmin=vmin,
-        vmax=vmax,
-        annot=True,
-        fmt=".1f",
-        square=True,
-        xticklabels=False,
-        yticklabels=False,
-        cbar=False,
-        cmap="coolwarm",
-    )
-    axes[1].set_title("Key")
+    for key, title in zip([0, 1], ["No key", "Key"]):
+        sns.heatmap(
+            values[key],
+            ax=axes[key],
+            vmin=vmin,
+            vmax=vmax,
+            annot=True,
+            fmt=".1f",
+            square=True,
+            xticklabels=False,
+            yticklabels=False,
+            cbar=False,
+            cmap="coolwarm",
+        )
+        axes[key].set_title(title)
 
     axes[2].imshow(env.render())
     axes[2].set_xticks([])
     axes[2].set_yticks([])
 
-    plt.plot()
+    plt.show()
+
+
+def plot_action_values(values_dict):
+    env = gym.make("codefinityrl:KeyAndChest-v0", render_mode="rgb_array")
+    env.reset()
+
+    values = np.full((2, 7, 7, 4), np.nan)
+    for (x, y, key), action in values_dict.keys():
+        values[int(key), y - 1, x - 1, action] = values_dict[((x, y, key), action)]
+
+    vmin = np.min(values, where=~np.isnan(values), initial=np.inf)
+    vmax = np.max(values, where=~np.isnan(values), initial=-np.inf)
+
+    norm = mcolors.Normalize(vmin=vmin, vmax=vmax)
+    cmap = plt.get_cmap("coolwarm")
+
+    fig, axes = plt.subplots(1, 3, figsize=(16, 5))
+
+    for key, title in zip([0, 1], ["No key", "Key"]):
+        axes[key].set_aspect("equal")
+        for y in range(7):
+            for x in range(7):
+                center = (x + 0.5, y + 0.5)
+                triangles = {
+                    0: [(x, y), (x + 1, y), center],
+                    1: [(x, y + 1), (x + 1, y + 1), center],
+                    2: [(x, y + 1), (x, y), center],
+                    3: [(x + 1, y + 1), (x + 1, y), center],
+                }
+
+                for action, vertices in triangles.items():
+                    if not np.isnan(values[key, y, x, action]):
+                        val = values[key, y, x, action]
+                        color = cmap(norm(val))
+                        lum = relative_luminance(color)
+                        text_color = "0.15" if lum > 0.408 else "w"
+                        poly = Polygon(vertices, facecolor=color)
+                        axes[key].add_patch(poly)
+                        cx = sum(v[0] for v in vertices) / 3
+                        cy = sum(v[1] for v in vertices) / 3
+                        axes[key].text(
+                            cx,
+                            cy,
+                            f"{val:.1f}",
+                            color=text_color,
+                            ha="center",
+                            va="center",
+                            fontsize=6,
+                        )
+
+        axes[key].set_title(title)
+        axes[key].set_xlim(0, 7)
+        axes[key].set_ylim(0, 7)
+        axes[key].invert_yaxis()
+        axes[key].set_xticks([])
+        axes[key].set_yticks([])
+        axes[key].axis("off")
+
+    axes[2].imshow(env.render())
+    axes[2].set_xticks([])
+    axes[2].set_yticks([])
+
+    plt.tight_layout()
+    plt.show()
 
 
 def plot_policy(policy_dict):
@@ -130,50 +188,47 @@ def plot_policy(policy_dict):
     env.reset()
 
     policy = np.full((2, 7, 7), np.nan)
-    policy_annots = np.full((2, 7, 7), "")
-    for state in env.unwrapped.states():
-        policy[int(state[2]), state[1] - 1, state[0] - 1] = policy_dict[state]
-        policy_annots[int(state[2]), state[1] - 1, state[0] - 1] = (
-            env.unwrapped.action_descriptions[policy_dict[state]][0]
-        )
-
-    vmin = np.min(policy, where=~np.isnan(policy), initial=np.inf)
-    vmax = np.max(policy, where=~np.isnan(policy), initial=-np.inf)
+    for x, y, key in policy_dict.keys():
+        policy[int(key), y - 1, x - 1] = policy_dict[(x, y, key)]
 
     fig, axes = plt.subplots(1, 3, figsize=(16, 5))
 
-    sns.heatmap(
-        policy[0],
-        ax=axes[0],
-        vmin=vmin,
-        vmax=vmax,
-        annot=policy_annots[0],
-        fmt="",
-        square=True,
-        xticklabels=False,
-        yticklabels=False,
-        cbar=False,
-        cmap=sns.color_palette("hls", 4),
-    )
-    axes[0].set_title("No key")
+    arrow_deltas = {0: (0, -0.3), 1: (0, 0.3), 2: (-0.3, 0), 3: (0.3, 0)}
 
-    sns.heatmap(
-        policy[1],
-        ax=axes[1],
-        vmin=vmin,
-        vmax=vmax,
-        annot=policy_annots[1],
-        fmt="",
-        square=True,
-        xticklabels=False,
-        yticklabels=False,
-        cbar=False,
-        cmap=sns.color_palette("hls", 4),
-    )
-    axes[1].set_title("Key")
+    for key, title in zip([0, 1], ["No key", "Key"]):
+        axes[key].set_aspect("equal")
+
+        for x in range(8):
+            axes[key].axvline(x, color="lightgray", linewidth=1)
+        for y in range(8):
+            axes[key].axhline(y, color="lightgray", linewidth=1)
+
+        for y in range(7):
+            for x in range(7):
+                action = policy[key, y, x]
+                if not np.isnan(action):
+                    cx, cy = x + 0.5, y + 0.5
+                    dx, dy = arrow_deltas[action]
+                    axes[key].annotate(
+                        "",
+                        xy=(cx + dx, cy + dy),
+                        xytext=(cx - dx, cy - dy),
+                        arrowprops=dict(arrowstyle="->", lw=1.5),
+                        ha="center",
+                        va="center",
+                    )
+
+        axes[key].set_title(title)
+        axes[key].set_xlim(0, 7)
+        axes[key].set_ylim(0, 7)
+        axes[key].invert_yaxis()
+        axes[key].set_xticks([])
+        axes[key].set_yticks([])
+        axes[key].axis("off")
 
     axes[2].imshow(env.render())
     axes[2].set_xticks([])
     axes[2].set_yticks([])
 
-    plt.plot()
+    plt.tight_layout()
+    plt.show()
