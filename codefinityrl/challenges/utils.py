@@ -77,7 +77,7 @@ class VideoRecord:
 
 
 def plot_values(values_dict):
-    if len(values_dict.keys()[0]) == 3:
+    if len(next(iter(values_dict))) == 3:
         plot_state_values(values_dict)
     else:
         plot_action_values(values_dict)
