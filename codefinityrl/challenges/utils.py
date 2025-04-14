@@ -76,6 +76,15 @@ class VideoRecord:
         )
 
 
+def add_walls(ax, walls):
+    for wall in walls:
+        i, j, orientation = wall
+        if orientation == "h":
+            ax.plot([i - 1, i], [j, j], color="black", linewidth=1)
+        elif orientation == "v":
+            ax.plot([i, i], [j - 1, j], color="black", linewidth=1)
+
+
 def plot_values(values_dict):
     if len(next(iter(values_dict))) == 3:
         plot_state_values(values_dict)
@@ -97,6 +106,13 @@ def plot_state_values(values_dict):
     fig, axes = plt.subplots(1, 3, figsize=(16, 5))
 
     for key, title in zip([0, 1], ["No key", "Key"]):
+        axes[key].set_aspect("equal")
+
+        for x in range(8):
+            axes[key].axvline(x, color="lightgray", linewidth=1)
+        for y in range(8):
+            axes[key].axhline(y, color="lightgray", linewidth=1)
+
         sns.heatmap(
             values[key],
             ax=axes[key],
@@ -110,7 +126,15 @@ def plot_state_values(values_dict):
             cbar=False,
             cmap="coolwarm",
         )
+
+        add_walls(axes[key], env.unwrapped._walls)
         axes[key].set_title(title)
+        axes[key].set_xlim(0, 7)
+        axes[key].set_ylim(0, 7)
+        axes[key].invert_yaxis()
+        axes[key].set_xticks([])
+        axes[key].set_yticks([])
+        axes[key].axis("off")
 
     axes[2].imshow(env.render())
     axes[2].set_xticks([])
@@ -137,6 +161,12 @@ def plot_action_values(values_dict):
 
     for key, title in zip([0, 1], ["No key", "Key"]):
         axes[key].set_aspect("equal")
+
+        for x in range(8):
+            axes[key].axvline(x, color="lightgray", linewidth=1)
+        for y in range(8):
+            axes[key].axhline(y, color="lightgray", linewidth=1)
+
         for y in range(7):
             for x in range(7):
                 center = (x + 0.5, y + 0.5)
@@ -167,6 +197,7 @@ def plot_action_values(values_dict):
                             fontsize=6,
                         )
 
+        add_walls(axes[key], env.unwrapped._walls)
         axes[key].set_title(title)
         axes[key].set_xlim(0, 7)
         axes[key].set_ylim(0, 7)
@@ -218,6 +249,7 @@ def plot_policy(policy_dict):
                         va="center",
                     )
 
+        add_walls(axes[key], env.unwrapped._walls)
         axes[key].set_title(title)
         axes[key].set_xlim(0, 7)
         axes[key].set_ylim(0, 7)
