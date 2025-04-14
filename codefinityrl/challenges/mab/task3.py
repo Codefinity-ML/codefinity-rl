@@ -1,18 +1,7 @@
 import numpy as np
 
-from codefinityrl.challenges.utils import display_hint, display_solution, display_check
+from codefinityrl.challenges.utils import display_solution, display_check
 from codefinityrl.challenges.mab.impls import _test_agent, _UpperConfidenceBoundAgent
-
-
-def hint3():
-    hint = """
-These functions may help you to write an agent:
-- `np.zeros`
-- `np.argmax`
-- `np.sqrt`
-- `np.log`
-"""
-    return display_hint(hint)
 
 
 def solution3():

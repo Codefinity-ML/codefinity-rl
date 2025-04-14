@@ -1,19 +1,7 @@
 import numpy as np
 
 from codefinityrl.challenges.mab.impls import _test_agent, _EpsilonGreedyAgent
-from codefinityrl.challenges.utils import display_hint, display_solution, display_check
-
-
-def hint2():
-    hint = """
-These functions may help you to write an agent:
-- `np.full`(don't forget about dtype parameter)
-- `np.zeros`
-- `np_random.uniform`
-- `np_random.integers`
-- `np.argmax`
-"""
-    return display_hint(hint)
+from codefinityrl.challenges.utils import display_solution, display_check
 
 
 def solution2():

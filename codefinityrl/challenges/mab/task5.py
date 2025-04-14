@@ -1,20 +1,12 @@
 import numpy as np
 
-from codefinityrl.challenges.utils import display_hint, display_solution, display_check
+from codefinityrl.challenges.utils import display_solution, display_check
 from codefinityrl.challenges.mab.impls import (
     _test_agent,
     _EpsilonGreedyAgent,
     _UpperConfidenceBoundAgent,
     _GradientBanditsAgent,
 )
-
-
-def hint5():
-    hint = """
-`env_params` has `"max_episode_steps"` key, use it to initialize `optimal_action_rate` with `np.zeros`.
-You should also use dictionary unpacking to avoid writing a lot of code
-"""
-    return display_hint(hint)
 
 
 def solution5():

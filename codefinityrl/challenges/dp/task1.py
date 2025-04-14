@@ -1,14 +1,5 @@
 import gymnasium as gym
-from codefinityrl.challenges.utils import display_hint, display_solution, display_check
-
-
-def hint1():
-    hint = """
-You don't need to write all actions at once. 
-Write some actions and check how your agent behaves, 
-then proceed to write more actions
-"""
-    display_hint(hint)
+from codefinityrl.challenges.utils import display_solution, display_check
 
 
 def solution1():

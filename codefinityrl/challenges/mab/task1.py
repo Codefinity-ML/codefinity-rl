@@ -1,12 +1,5 @@
-from codefinityrl.challenges.utils import display_hint, display_solution, display_check
+from codefinityrl.challenges.utils import display_solution, display_check
 from codefinityrl.envs import MultiArmedBanditStationaryEnv, MultiArmedBanditDynamicEnv
-
-
-def hint1():
-    hint = """
-Just use the `gym.make` function with apropriate parameters
-"""
-    display_hint(hint)
 
 
 def solution1():

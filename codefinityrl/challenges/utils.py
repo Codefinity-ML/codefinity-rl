@@ -7,16 +7,12 @@ import matplotlib.pyplot as plt
 import matplotlib.colors as mcolors
 import seaborn as sns
 from IPython.display import display, Video
-from IPython.display import display_markdown, display_html
+from IPython.display import display_html
 from matplotlib.patches import Polygon
 from pygments import highlight
 from pygments.lexers import get_lexer_by_name
 from pygments.formatters import HtmlFormatter
 from seaborn.utils import relative_luminance
-
-
-def display_hint(text: str):
-    display_markdown(text, raw=True)
 
 
 def display_solution(code: str):

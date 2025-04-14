@@ -1,23 +1,10 @@
 import gymnasium as gym
 from codefinityrl.challenges.utils import (
-    display_hint,
     display_solution,
     display_check,
     value_dicts_close,
 )
 from codefinityrl.challenges.dp.impls import _PolicyIterationAgent
-
-
-def hint2():
-    hint = """
-Hints:
-- To implement policy evaluation loop, you may want to initialize delta
-to np.inf before the while loop;
-- For policy improvement, argmax is better implemented by an inner
-loop over actions. To find the best action, use additional variables to
-store the action value and the current best action.
-"""
-    display_hint(hint)
 
 
 def solution2():

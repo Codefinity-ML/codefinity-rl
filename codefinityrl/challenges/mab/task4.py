@@ -1,18 +1,8 @@
 import numpy as np
 
-from codefinityrl.challenges.utils import display_hint, display_solution, display_check
+from codefinityrl.challenges.utils import display_solution, display_check
 from codefinityrl.challenges.mab.impls import _test_agent, _GradientBanditsAgent
 from codefinityrl.math import softmax
-
-
-def hint4():
-    hint = """
-These functions may help you to write an agent:
-- `np.zeros`
-- `np_random.choice`
-Also, don't forget about softmax function
-"""
-    return display_hint(hint)
 
 
 def solution4():
