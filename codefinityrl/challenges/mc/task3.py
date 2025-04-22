@@ -115,16 +115,44 @@ def check3(user_agent_cls):
             display_check(False, "init_state incorrectly initializes importances")
             return
 
-    if user_agent.get_action(test_state, epsilon=0) != user_agent.policy[test_state]:
+    user_agent.values[(test_state, 0)] = -5
+    user_agent.values[(test_state, 1)] = 5
+    user_agent.update_policy(test_state)
+
+    if user_agent.policy[test_state] != 1:
         display_check(
-            False, "get_action must return greedy action when epsilon is zero"
+            False, "update_policy does not pick the action with the highest value"
         )
         return
 
-    random_actions = [user_agent.get_action(test_state, epsilon=1) for _ in range(100)]
+    user_agent.values[(test_state, 0)] = 5
+
+    if user_agent.policy[test_state] != 0:
+        display_check(
+            False, "update_policy does not pick the first action with the highest value"
+        )
+        return
+
+    if user_agent.get_target_action(test_state) != user_agent.policy[test_state]:
+        display_check(False, "get_target_action must return greedy action")
+        return
+
+    if (
+        user_agent.get_behavior_action(test_state, epsilon=0)
+        != user_agent.policy[test_state]
+    ):
+        display_check(
+            False, "get_behavior_action must return greedy action when epsilon is zero"
+        )
+        return
+
+    random_actions = [
+        user_agent.get_behavior_action(test_state, epsilon=1) for _ in range(100)
+    ]
     if 1 not in random_actions or 2 not in random_actions or 3 not in random_actions:
         display_check(
-            False, "get_action must return a random action with probability epsilon"
+            False,
+            "get_behavior_action must return a random action with probability epsilon",
         )
         return
 
