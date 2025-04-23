@@ -18,14 +18,12 @@ class SARSA:
 
         self.policy = {}
         self.values = {}
-        self.counts = {}
 
     def init_state(self, state):
         if state not in self.policy:
             self.policy[state] = 0
             for action in range(self.env.action_space.n):
                 self.values[(state, action)] = 0
-                self.counts[(state, action)] = 0
 
     def update_policy(self, state):
         best_action = None
@@ -87,9 +85,6 @@ def check1(user_agent_cls):
     for a in range(env.action_space.n):
         if user_agent.values[(test_state, a)] != 0:
             display_check(False, "init_state incorrectly initializes values")
-            return
-        if user_agent.counts[(test_state, a)] != 0:
-            display_check(False, "init_state incorrectly initializes counts")
             return
 
     user_agent.values[(test_state, 0)] = -5

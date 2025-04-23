@@ -11,14 +11,12 @@ class _SARSA:
 
         self.policy = {}
         self.values = {}
-        self.counts = {}
 
     def init_state(self, state):
         if state not in self.policy:
             self.policy[state] = 0
             for action in range(self.env.action_space.n):
                 self.values[(state, action)] = 0
-                self.counts[(state, action)] = 0
 
     def update_policy(self, state):
         best_action = None
@@ -73,14 +71,12 @@ class _QLearning:
 
         self.policy = {}
         self.values = {}
-        self.counts = {}
 
     def init_state(self, state):
         if state not in self.policy:
             self.policy[state] = 0
             for action in range(self.env.action_space.n):
                 self.values[(state, action)] = 0
-                self.counts[(state, action)] = 0
 
     def update_policy(self, state):
         best_action = None
