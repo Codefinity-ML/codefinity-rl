@@ -8,7 +8,7 @@ from codefinityrl.challenges.utils import (
 from codefinityrl.challenges.td.impls import _SARSA
 
 
-def solution2():
+def solution1():
     code = """
 class SARSA:
     def __init__(self, env: gym.Env):
@@ -74,7 +74,7 @@ class SARSA:
     display_solution(code)
 
 
-def check2(user_agent_cls):
+def check1(user_agent_cls):
     env = gym.make("codefinityrl:KeyAndChest-v0")
 
     user_agent = user_agent_cls(env)
