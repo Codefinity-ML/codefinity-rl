@@ -132,4 +132,4 @@ def check1(user_agent_cls):
         display_check(False, "Training loop is implemented incorrectly")
         return
 
-    display_check(True, "Correct! Here is the second part of the key: PEFo2")
+    display_check(True, "Correct! Here is the first part of the key: PEFo2")
