@@ -176,9 +176,9 @@ def check3(user_agent_cls):
     correct_agent = _OffPolicyMonteCarloControl(env)
 
     user_agent_eps = _Decay(200, 1, 0.8)
-    correct_agent_eps = _Decay(200)
+    correct_agent_eps = _Decay(200, 1, 0.8)
 
-    user_agent.train(0.99, 200, user_agent_eps, 0.01, 1, 0.8)
+    user_agent.train(0.99, 200, user_agent_eps, 0.01)
     correct_agent.train(0.99, 200, correct_agent_eps, 0.01)
 
     if (
