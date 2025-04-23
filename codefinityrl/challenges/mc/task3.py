@@ -178,8 +178,8 @@ def check3(user_agent_cls):
     user_agent_eps = _Decay(200)
     correct_agent_eps = _Decay(200)
 
-    user_agent.train(0.99, 200, user_agent_eps)
-    correct_agent.train(0.99, 200, correct_agent_eps)
+    user_agent.train(0.99, 200, user_agent_eps, 0.01)
+    correct_agent.train(0.99, 200, correct_agent_eps, 0.01)
 
     if (
         not value_dicts_close(user_agent.values, correct_agent.values)
