@@ -43,7 +43,7 @@ class QLearning:
             return self.policy[state]
 
     def train(self, gamma: float, episodes: int, epsilon: float, alpha: float):
-        for e in range(episodes):
+        for _ in range(episodes):
             state, _ = self.env.reset()
             self.init_state(state)
 

@@ -59,7 +59,7 @@ class OnPolicyMonteCarloControl:
         return episode
 
     def train(self, gamma: float, episodes: int, epsilon):
-        for e in range(episodes):
+        for _ in range(episodes):
             episode = self.get_episode(epsilon())
 
             G = 0
