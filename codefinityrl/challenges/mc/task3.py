@@ -126,6 +126,7 @@ def check3(user_agent_cls):
         return
 
     user_agent.values[(test_state, 0)] = 5
+    user_agent.update_policy(test_state)
 
     if user_agent.policy[test_state] != 0:
         display_check(
