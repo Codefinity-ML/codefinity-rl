@@ -1,11 +1,11 @@
 import gymnasium as gym
 from codefinityrl.challenges.utils import (
     display_solution,
-    display_check,
     value_dicts_close,
 )
 
 from codefinityrl.challenges.mc.impls import _OnPolicyMonteCarloControl, _Decay
+from codefinityrl.tests import test_case, test_case_context_var, TestFailure
 
 
 def solution2():
@@ -83,56 +83,59 @@ class OnPolicyMonteCarloControl:
     display_solution(code)
 
 
+@test_case("Correct! Here is the second part of the key: LZbET")
 def check2(user_agent_cls):
+    test_case_context = test_case_context_var.get()
+
     env = gym.make("codefinityrl:KeyAndChest-v0")
 
+    test_case_context.set_test("init_state correctly initializes policy")
     user_agent = user_agent_cls(env)
     test_state = (1, 1, False)
     user_agent.init_state(test_state)
 
     if user_agent.policy[test_state] != 0:
-        display_check(False, "init_state incorrectly initializes policy")
-        return
+        raise TestFailure
+
+    test_case_context.set_test("init_state correctly initializes values")
     for a in range(env.action_space.n):
         if user_agent.values[(test_state, a)] != 0:
-            display_check(False, "init_state incorrectly initializes values")
-            return
-        if user_agent.counts[(test_state, a)] != 0:
-            display_check(False, "init_state incorrectly initializes counts")
-            return
+            raise TestFailure
 
+    test_case_context.set_test("init_state correctly initializes counts")
+    for a in range(env.action_space.n):
+        if user_agent.counts[(test_state, a)] != 0:
+            raise TestFailure
+
+    test_case_context.set_test("update_policy picks the action with the highest value")
     user_agent.values[(test_state, 0)] = -5
     user_agent.values[(test_state, 1)] = 5
     user_agent.update_policy(test_state)
 
     if user_agent.policy[test_state] != 1:
-        display_check(
-            False, "update_policy does not pick the action with the highest value"
-        )
-        return
+        raise TestFailure
 
+    test_case_context.set_test(
+        "update_policy picks the first action with the highest value"
+    )
     user_agent.values[(test_state, 0)] = 5
     user_agent.update_policy(test_state)
 
     if user_agent.policy[test_state] != 0:
-        display_check(
-            False, "update_policy does not pick the first action with the highest value"
-        )
-        return
+        raise TestFailure
 
+    test_case_context.set_test("get_action returns greedy action when epsilon is zero")
     if user_agent.get_action(test_state, epsilon=0) != user_agent.policy[test_state]:
-        display_check(
-            False, "get_action must return greedy action when epsilon is zero"
-        )
-        return
+        raise TestFailure
 
-    random_actions = [user_agent.get_action(test_state, epsilon=1) for _ in range(100)]
+    test_case_context.set_test(
+        "get_action returns a random action with probability epsilon"
+    )
+    random_actions = [user_agent.get_action(test_state, epsilon=1) for _ in range(1000)]
     if 1 not in random_actions or 2 not in random_actions or 3 not in random_actions:
-        display_check(
-            False, "get_action must return a random action with probability epsilon"
-        )
-        return
+        raise TestFailure
 
+    test_case_context.set_test("get_episode generates episodes correctly")
     user_agent = user_agent_cls(env)
     correct_agent = _OnPolicyMonteCarloControl(env)
 
@@ -140,14 +143,13 @@ def check2(user_agent_cls):
     correct_episode = correct_agent.get_episode(epsilon=1)
 
     if len(user_episode) != len(correct_episode):
-        display_check(False, "get_episode generates episodes incorrectly")
-        return
+        raise TestFailure
 
     for i in range(len(correct_episode)):
         if user_episode[i] != correct_episode[i]:
-            display_check(False, "get_episode generates episodes incorrectly")
-            return
+            raise TestFailure
 
+    test_case_context.set_test("Training loop is implemented correctly")
     user_agent = user_agent_cls(env)
     correct_agent = _OnPolicyMonteCarloControl(env)
 
@@ -161,7 +163,4 @@ def check2(user_agent_cls):
         not value_dicts_close(user_agent.values, correct_agent.values)
         or user_agent.policy != correct_agent.policy
     ):
-        display_check(False, "Training loop is implemented incorrectly")
-        return
-
-    display_check(True, "Correct! Here is the second part of the key: LZbET")
+        raise TestFailure

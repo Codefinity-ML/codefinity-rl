@@ -1,10 +1,12 @@
+import types
+
 import gymnasium as gym
 from codefinityrl.challenges.utils import (
     display_solution,
-    display_check,
     value_dicts_close,
 )
 from codefinityrl.challenges.dp.impls import _PolicyIterationAgent
+from codefinityrl.tests import test_case, test_case_context_var, TestFailure
 
 
 def solution2():
@@ -63,10 +65,17 @@ class PolicyIterationAgent:
     display_solution(code)
 
 
+@test_case("Correct! Here is the second part of the key: U2Iq0")
 def check2(user_agent_cls):
+    test_case_context = test_case_context_var.get()
+
     env = gym.make("codefinityrl:KeyAndChest-v0")
 
-    user_agent = user_agent_cls(env)
+    test_case_context.set_test("Policy evaluation is implemented correctly")
+    user_agent = _PolicyIterationAgent(env)
+    user_agent.evaluate_policy = types.MethodType(
+        user_agent_cls.evaluate_policy, user_agent
+    )
     correct_agent = _PolicyIterationAgent(env)
 
     is_optimal = False
@@ -75,23 +84,49 @@ def check2(user_agent_cls):
         correct_agent.evaluate_policy(theta=1e-6, gamma=0.99)
 
         if not value_dicts_close(user_agent.values, correct_agent.values):
-            display_check(False, "Policy evaluation is implemented incorrectly")
-            return
+            raise TestFailure
+
+        user_agent.improve_policy(gamma=0.99)
+        is_optimal = correct_agent.improve_policy(gamma=0.99)
+
+    test_case_context.set_test("Policy improvement is implemented correctly")
+    user_agent = _PolicyIterationAgent(env)
+    user_agent.improve_policy = types.MethodType(
+        user_agent_cls.improve_policy, user_agent
+    )
+    correct_agent = _PolicyIterationAgent(env)
+
+    is_optimal = False
+    while not is_optimal:
+        user_agent.evaluate_policy(theta=1e-6, gamma=0.99)
+        correct_agent.evaluate_policy(theta=1e-6, gamma=0.99)
+
+        user_agent.improve_policy(gamma=0.99)
+        is_optimal = correct_agent.improve_policy(gamma=0.99)
+
+        if user_agent.policy != correct_agent.policy:
+            raise TestFailure
+
+    test_case_context.set_test(
+        "Policy improvement correctly identifies if policy is optimal"
+    )
+    user_agent = _PolicyIterationAgent(env)
+    user_agent.improve_policy = types.MethodType(
+        user_agent_cls.improve_policy, user_agent
+    )
+    correct_agent = _PolicyIterationAgent(env)
+
+    while not is_optimal:
+        user_agent.evaluate_policy(theta=1e-6, gamma=0.99)
+        correct_agent.evaluate_policy(theta=1e-6, gamma=0.99)
 
         is_optimal_user = user_agent.improve_policy(gamma=0.99)
         is_optimal = correct_agent.improve_policy(gamma=0.99)
 
-        if user_agent.policy != correct_agent.policy:
-            display_check(False, "Policy improvement is implemented incorrectly")
-            return
-
         if is_optimal_user != is_optimal:
-            display_check(
-                False,
-                "Policy improvement doesn't identify correctly if current policy is optimal",
-            )
-            return
+            raise TestFailure
 
+    test_case_context.set_test("Training loop is implemented correctly")
     user_agent = user_agent_cls(env)
     correct_agent = _PolicyIterationAgent(env)
 
@@ -102,7 +137,4 @@ def check2(user_agent_cls):
         not value_dicts_close(user_agent.values, correct_agent.values)
         or user_agent.policy != correct_agent.policy
     ):
-        display_check(False, "Training loop is implemented incorrectly")
-        return
-
-    display_check(True, "Correct! Here is the second part of the key: U2Iq0")
+        raise TestFailure

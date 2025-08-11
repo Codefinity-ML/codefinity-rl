@@ -1,12 +1,13 @@
 import numpy as np
 
-from codefinityrl.challenges.utils import display_solution, display_check
+from codefinityrl.challenges.utils import display_solution
 from codefinityrl.challenges.mab.impls import (
     _test_agent,
     _EpsilonGreedyAgent,
     _UpperConfidenceBoundAgent,
     _GradientBanditsAgent,
 )
+from codefinityrl.tests import test_case, test_case_context_var, TestFailure
 
 
 def solution5():
@@ -53,7 +54,10 @@ def _test_params(user_test_agent, env_params: dict, agent_cls, agent_params: dic
     ), np.isclose(average_return_correct, average_return_actual)
 
 
+@test_case("Correct! Here is the fifth part of the key: ouePl")
 def check5(user_test_agent):
+    test_case_context = test_case_context_var.get()
+
     env_params_1 = {
         "id": "codefinityrl:MultiArmedBanditStationary-v0",
         "max_episode_steps": 1000,
@@ -69,40 +73,62 @@ def check5(user_test_agent):
     agent_params_2 = {"n_arms": 10, "confidence": 0.2}
     agent_params_3 = {"n_arms": 10, "alpha": 0.2}
 
+    test_case_context.set_test(
+        "Your test returns correct optimal_action_rate for this config: stationary environment, epsilon-greedy agent"
+    )
     oar, ar = _test_params(
         user_test_agent, env_params_1, _EpsilonGreedyAgent, agent_params_1
     )
-    if not oar or not ar:
-        display_check(
-            False,
-            f"""Your test returns incorrect {"optimal_action_rate" if not oar else ""}{" and " if not oar and not ar else ""}{"average_return" if not ar else ""} for this config: stationary environment, epsilon-greedy agent""",
-        )
-        return
+    if not oar:
+        raise TestFailure
+
+    test_case_context.set_test(
+        "Your test returns correct average_return for this config: stationary environment, epsilon-greedy agent"
+    )
+    if not ar:
+        raise TestFailure
+
+    test_case_context.set_test(
+        "Your test returns correct optimal_action_rate for this config: stationary environment, UCB agent"
+    )
     oar, ar = _test_params(
         user_test_agent, env_params_1, _UpperConfidenceBoundAgent, agent_params_2
     )
-    if not oar or not ar:
-        display_check(
-            False,
-            f"""Your test returns incorrect {"optimal_action_rate" if not oar else ""}{" and " if not oar and not ar else ""}{"average_return" if not ar else ""} for this config: stationary environment, UCB agent""",
-        )
-        return
+    if not oar:
+        raise TestFailure
+
+    test_case_context.set_test(
+        "Your test returns correct average_return for this config: stationary environment, UCB agent"
+    )
+    if not ar:
+        raise TestFailure
+
+    test_case_context.set_test(
+        "Your test returns correct optimal_action_rate for this config: stationary environment, gradient bandits agent"
+    )
     oar, ar = _test_params(
         user_test_agent, env_params_1, _GradientBanditsAgent, agent_params_3
     )
-    if not oar or not ar:
-        display_check(
-            False,
-            f"""Your test returns incorrect {"optimal_action_rate" if not oar else ""}{" and " if not oar and not ar else ""}{"average_return" if not ar else ""} for this config: stationary environment, gradient bandits agent""",
-        )
-        return
+    if not oar:
+        raise TestFailure
+
+    test_case_context.set_test(
+        "Your test returns correct average_return for this config: stationary environment, gradient bandits agent"
+    )
+    if not ar:
+        raise TestFailure
+
+    test_case_context.set_test(
+        "Your test returns correct optimal_action_rate for this config: dynamic environment, epsilon-greedy agent"
+    )
     oar, ar = _test_params(
         user_test_agent, env_params_2, _EpsilonGreedyAgent, agent_params_1
     )
-    if not oar or not ar:
-        display_check(
-            False,
-            f"""Your test returns incorrect {"optimal_action_rate" if not oar else ""}{" and " if not oar and not ar else ""}{"average_return" if not ar else ""} for this config: dynamic environment, epsilon-greedy agent""",
-        )
-        return
-    display_check(True, "Correct! Here is the fifth part of the key: ouePl")
+    if not oar:
+        raise TestFailure
+
+    test_case_context.set_test(
+        "Your test returns correct average_return for this config: dynamic environment, epsilon-greedy agent"
+    )
+    if not ar:
+        raise TestFailure

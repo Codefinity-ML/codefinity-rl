@@ -1,7 +1,8 @@
 import numpy as np
 
 from codefinityrl.challenges.mab.impls import _test_agent, _EpsilonGreedyAgent
-from codefinityrl.challenges.utils import display_solution, display_check
+from codefinityrl.challenges.utils import display_solution
+from codefinityrl.tests import test_case, test_case_context_var, TestFailure
 
 
 def solution2():
@@ -48,7 +49,10 @@ def _test_params(env_params: dict, agent_cls, agent_params: dict):
     return np.isclose(average_return_correct, average_return_actual)
 
 
+@test_case("Correct! Here is the second part of the key: uivu0")
 def check2(agent_cls):
+    test_case_context = test_case_context_var.get()
+
     env_params = {
         "id": "codefinityrl:MultiArmedBanditStationary-v0",
         "max_episode_steps": 1000,
@@ -57,23 +61,17 @@ def check2(agent_cls):
     agent_params_1 = {"n_arms": 10, "epsilon": 0.2}
     agent_params_2 = {"n_arms": 10, "epsilon": 0.2, "alpha": 0.1}
     agent_params_3 = {"n_arms": 10, "epsilon": 0.2, "alpha": 0.1, "optimistic": 1}
-    agent = agent_cls(**agent_params_1)
-    if not all(
-        x is not None
-        for x in [agent.n_arms, agent.epsilon, agent.alpha, agent.Q, agent.N]
-    ):
-        display_check(False, "Some of object attributes are not initialized")
-        return
+
+    test_case_context.set_test(
+        "Algorithm works correctly with mean estimates for action values"
+    )
     if not _test_params(env_params, agent_cls, agent_params_1):
-        display_check(
-            False,
-            "Your algorithm works incorrectly with mean estimates for action values",
-        )
-        return
+        raise TestFailure
+
+    test_case_context.set_test("Algorithm works correctly with constant step size")
     if not _test_params(env_params, agent_cls, agent_params_2):
-        display_check(False, "Your algorithm works incorrectly with constant step size")
-        return
+        raise TestFailure
+
+    test_case_context.set_test("Algorithm works correctly with optimisic values")
     if not _test_params(env_params, agent_cls, agent_params_3):
-        display_check(False, "Your algorithm works incorrectly with optimisic values")
-        return
-    display_check(True, "Correct! Here is the second part of the key: uivu0")
+        raise TestFailure

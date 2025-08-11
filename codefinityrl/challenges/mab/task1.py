@@ -1,5 +1,6 @@
-from codefinityrl.challenges.utils import display_solution, display_check
+from codefinityrl.challenges.utils import display_solution
 from codefinityrl.envs import MultiArmedBanditStationaryEnv, MultiArmedBanditDynamicEnv
+from codefinityrl.tests import test_case, test_case_context_var, TestFailure
 
 
 def solution1():
@@ -20,16 +21,20 @@ env_dynamic = gym.make(
     display_solution(code)
 
 
+@test_case("Correct! Here is the first part of the key: WKVkH")
 def check1(env_stationary, env_dynamic):
+    test_case_context = test_case_context_var.get()
+
+    test_case_context.set_test("Stationary environment created")
     if not (
         hasattr(env_stationary, "unwrapped")
         and isinstance(env_stationary.unwrapped, MultiArmedBanditStationaryEnv)
     ):
-        display_check(False, "You did not create a stationary environment")
-    elif not (
+        raise TestFailure
+
+    test_case_context.set_test("Dynamic environment created")
+    if not (
         hasattr(env_dynamic, "unwrapped")
         and isinstance(env_dynamic.unwrapped, MultiArmedBanditDynamicEnv)
     ):
-        display_check(False, "You did not create a dynamic environment")
-    else:
-        display_check(True, "Correct! Here is the first part of the key: WKVkH")
+        raise TestFailure

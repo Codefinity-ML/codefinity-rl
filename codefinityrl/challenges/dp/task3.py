@@ -1,10 +1,10 @@
 import gymnasium as gym
 from codefinityrl.challenges.utils import (
     display_solution,
-    display_check,
     value_dicts_close,
 )
 from codefinityrl.challenges.dp.impls import _ValueIterationAgent
+from codefinityrl.tests import test_case, test_case_context_var, TestFailure
 
 
 def solution3():
@@ -58,26 +58,30 @@ class ValueIterationAgent:
     display_solution(code)
 
 
+@test_case("Correct! Here is the third part of the key: 5pEdG")
 def check3(user_agent_cls):
+    test_case_context = test_case_context_var.get()
+
     env = gym.make("codefinityrl:KeyAndChest-v0")
 
     user_agent = user_agent_cls(env)
     correct_agent = _ValueIterationAgent(env)
 
+    test_case_context.set_test("Policy evaluation is implemented correctly")
     user_agent.evaluate_policy(theta=1e-6, gamma=0.99)
     correct_agent.evaluate_policy(theta=1e-6, gamma=0.99)
 
     if not value_dicts_close(user_agent.values, correct_agent.values):
-        display_check(False, "Policy evaluation is implemented incorrectly")
-        return
+        raise TestFailure
 
+    test_case_context.set_test("Policy improvement is implemented correctly")
     user_agent.improve_policy(gamma=0.99)
     correct_agent.improve_policy(gamma=0.99)
 
     if user_agent.policy != correct_agent.policy:
-        display_check(False, "Policy improvement is implemented incorrectly")
-        return
+        raise TestFailure
 
+    test_case_context.set_test("Training is implemented correctly")
     user_agent = user_agent_cls(env)
     correct_agent = _ValueIterationAgent(env)
 
@@ -88,7 +92,4 @@ def check3(user_agent_cls):
         not value_dicts_close(user_agent.values, correct_agent.values)
         or user_agent.policy != correct_agent.policy
     ):
-        display_check(False, "Training is implemented incorrectly")
-        return
-
-    display_check(True, "Correct! Here is the third part of the key: 5pEdG")
+        raise TestFailure

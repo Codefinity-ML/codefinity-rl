@@ -1,7 +1,8 @@
 import numpy as np
 
-from codefinityrl.challenges.utils import display_solution, display_check
+from codefinityrl.challenges.utils import display_solution
 from codefinityrl.challenges.mab.impls import _test_agent, _UpperConfidenceBoundAgent
+from codefinityrl.tests import test_case, test_case_context_var, TestFailure
 
 
 def solution3():
@@ -38,21 +39,17 @@ def _test_params(env_params: dict, agent_cls, agent_params: dict):
     return np.isclose(average_return_correct, average_return_actual)
 
 
+@test_case("Correct! Here is the third part of the key: aFlt9")
 def check3(agent_cls):
+    test_case_context = test_case_context_var.get()
+
     env_params = {
         "id": "codefinityrl:MultiArmedBanditStationary-v0",
         "max_episode_steps": 1000,
         "n_arms": 10,
     }
     agent_params = {"n_arms": 10, "confidence": 0.2}
-    agent = agent_cls(**agent_params)
-    if not all(
-        x is not None
-        for x in [agent.n_arms, agent.confidence, agent.Q, agent.N, agent.t]
-    ):
-        display_check(False, "Some of object attributes are not initialized")
-        return
+
+    test_case_context.set_test("Algorithm works correctly")
     if not _test_params(env_params, agent_cls, agent_params):
-        display_check(False, "Your algorithm works incorrectly")
-        return
-    display_check(True, "Correct! Here is the third part of the key: aFlt9")
+        raise TestFailure

@@ -3,8 +3,8 @@ import numpy as np
 from codefinityrl.challenges.mc.impls import _Decay
 from codefinityrl.challenges.utils import (
     display_solution,
-    display_check,
 )
+from codefinityrl.tests import test_case, test_case_context_var, TestFailure
 
 
 def solution1():
@@ -42,27 +42,28 @@ def _test_params(params: dict, user_decay_cls):
     return True
 
 
+@test_case("Correct! Here is the first part of the key: styOX")
 def check1(user_decay_cls):
+    test_case_context = test_case_context_var.get()
+
     params_1 = {"steps": 99, "high": 1, "low": 0}
     params_2 = {"steps": 99, "high": 0.5, "low": 0.5}
     params_3 = {"steps": 99, "high": 0.7, "low": 0.3}
 
+    test_case_context.set_test(
+        f"Decay works correctly for this configuration: {params_1}"
+    )
     if not _test_params(params_1, user_decay_cls):
-        display_check(
-            False, f"Decay works incorrectly for this configuration: {params_1}"
-        )
-        return
+        raise TestFailure
 
+    test_case_context.set_test(
+        f"Decay works correctly for this configuration: {params_2}"
+    )
     if not _test_params(params_2, user_decay_cls):
-        display_check(
-            False, f"Decay works incorrectly for this configuration: {params_2}"
-        )
-        return
+        raise TestFailure
 
+    test_case_context.set_test(
+        f"Decay works correctly for this configuration: {params_3}"
+    )
     if not _test_params(params_3, user_decay_cls):
-        display_check(
-            False, f"Decay works incorrectly for this configuration: {params_3}"
-        )
-        return
-
-    display_check(True, "Correct! Here is the first part of the key: styOX")
+        raise TestFailure
