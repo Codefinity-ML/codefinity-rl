@@ -24,7 +24,7 @@ def display_solution(code: str):
 
 def display_check(correct: bool, text: str):
     display_html(
-        f"""<span style="color: {"green" if correct else "red"}">{text}</span>""",
+        f"""<span style="color: {"green" if correct else "red"}">{"&check;" if correct else "&cross;"} {text}</span>""",
         raw=True,
     )
 
