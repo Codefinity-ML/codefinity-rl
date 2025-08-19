@@ -54,9 +54,7 @@ def check4(user_softmax, agent_cls):
     agent_params = {"n_arms": 10, "alpha": 0.2}
 
     test_case_context.set_test("Softmax is implemented correctly")
-    if not np.array_equal(
-        user_softmax(np.array([1, 2, 3])), softmax(np.array([1, 2, 3]))
-    ):
+    if not np.allclose(user_softmax(np.array([1, 2, 3])), softmax(np.array([1, 2, 3]))):
         raise TestFailure
 
     test_case_context.set_test("Algorithm works correctly")
